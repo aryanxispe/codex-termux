@@ -26,6 +26,9 @@
 pkg update && pkg upgrade -y
 pkg install nodejs-lts -y
 
+# Grant storage permission
+termux-setup-storage
+
 # Install
 npm install -g @aryanxispe/codex-termux@latest
 

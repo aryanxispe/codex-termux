@@ -1,15 +1,21 @@
 # Codex CLI for Termux
 
 > Android Termux package built from upstream OpenAI Codex `rust-v0.121.0`.
-
-This package publishes the latest Termux-focused line as `@mmmbuto/codex-cli-termux`.
+> Maintained by **Aryan Gupta (Aryanispe Host)** — [aryanispehost.in](https://aryanispehost.in/)
 
 ## Install
 
 ```bash
 pkg update && pkg upgrade -y
 pkg install nodejs-lts -y
-npm install -g @mmmbuto/codex-cli-termux@latest
+
+# Grant storage permission
+termux-setup-storage
+
+# Install
+npm install -g @aryanxispe/codex-termux@latest
+
+# Verify
 codex --version
 codex login
 ```
@@ -27,5 +33,5 @@ codex login
 
 See the main repository for release notes and patch inventory:
 
-- https://github.com/DioNanos/codex-termux
-- https://github.com/DioNanos/codex-termux/blob/main/patches/README.md
+- https://github.com/aryanxispe/codex-termux
+- https://github.com/aryanxispe/codex-termux/blob/main/patches/README.md
