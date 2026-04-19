@@ -1,0 +1,9 @@
+{"type":"thread.started","thread_id":"019d0a84-f4f4-7992-a9d1-74b13a48e6da"}
+{"type":"turn.started"}
+{"type":"item.completed","item":{"id":"item_0","type":"reasoning","text":"**Creating test commands with exec_command**\n\nI'm creating a file using an echo command and then verifying its contents with cat to test exec_command functionality."}}
+{"type":"item.started","item":{"id":"item_1","type":"command_execution","command":"/bin/sh -lc \"printf '%s' 'hello' > hello.txt\"","aggregated_output":"","exit_code":null,"status":"in_progress"}}
+{"type":"item.completed","item":{"id":"item_1","type":"command_execution","command":"/bin/sh -lc \"printf '%s' 'hello' > hello.txt\"","aggregated_output":"","exit_code":0,"status":"completed"}}
+{"type":"item.started","item":{"id":"item_2","type":"command_execution","command":"/bin/sh -lc 'cat hello.txt'","aggregated_output":"","exit_code":null,"status":"in_progress"}}
+{"type":"item.completed","item":{"id":"item_2","type":"command_execution","command":"/bin/sh -lc 'cat hello.txt'","aggregated_output":"hello","exit_code":0,"status":"completed"}}
+{"type":"item.completed","item":{"id":"item_3","type":"agent_message","text":"Created `hello.txt` and read it. Output: `hello`."}}
+{"type":"turn.completed","usage":{"input_tokens":34417,"cached_input_tokens":33920,"output_tokens":85}}

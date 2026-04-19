@@ -1,0 +1,33 @@
+TEST-ID	RESULT	NOTE
+TEST-000	PASS	Workspace prepared at repository root workspace
+TEST-100	PASS	Global package installed: @mmmbuto/codex-cli-termux@0.121.0-termux
+TEST-101	PASS	codex --version returned codex-cli 0.121.0-termux
+TEST-102	PASS	codex-exec --version returned codex-exec 0.121.0-termux
+TEST-103	PASS	Login status reported Logged in using ChatGPT
+TEST-104	PASS	MCP list returned the expected enabled connectors
+TEST-105	PASS	Feature list rendered successfully
+TEST-106	PASS	codex completion bash emitted a completion function
+TEST-107	PASS	codex app-server generate-json-schema --help available
+TEST-108	PASS	codex debug prompt-input --help available
+TEST-201	PASS	codex --help rendered
+TEST-202	PASS	codex exec --help rendered
+TEST-203	PASS	codex review --help rendered
+TEST-204	PASS	codex login --help rendered
+TEST-205	PASS	codex logout --help rendered
+TEST-206	PASS	codex resume --help rendered
+TEST-207	PASS	codex fork --help rendered
+TEST-208	PASS	codex mcp --help rendered
+TEST-209	PASS	codex sandbox --help rendered
+TEST-210	PASS	codex app-server --help rendered
+TEST-301	PASS	codex-exec --sandbox workspace-write --skip-git-repo-check --json list-files smoke returned cwd and directory listing
+TEST-302	PASS	codex-exec --sandbox workspace-write --skip-git-repo-check --json create/read hello.txt passed
+TEST-303	PASS	codex-exec --sandbox workspace-write --skip-git-repo-check --json curl -I smoke returned HTTP/2 200
+TEST-401	PASS	readelf showed RUNPATH=$ORIGIN on codex.bin and codex-exec.bin
+TEST-402	PASS	readelf showed only expected shared library needs
+TEST-403	PASS	node wrapper routing for fork/debug/review/exec rendered help
+TEST-404	PASS	Package bin directory contains codex, codex-exec, binaries, and libc++_shared.so
+TEST-501	PASS	Termux environment confirmed via uname, node, npm, termux-open-url
+TEST-502	PASS	verify-patches.sh passed all Termux-specific patch checks
+TEST-503	PASS	Generated app-server schema files under a local schema output directory
+TEST-504	PASS	No runtime crash observed in the tested command surface
+TEST-900	PASS	Temporary repo-local test artifact cleaned up after validation

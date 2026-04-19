@@ -1,0 +1,53 @@
+TEST-ID	RESULT	NOTE
+TEST-000	PASS	Workspace prepared at /data/data/com.termux/files/home/codex-test-workspace
+TEST-101	PASS	Version command returned codex-cli 0.112.0
+TEST-102	PASS	Environment context collected
+TEST-103	PASS	AArch64 Termux Linux detected
+TEST-201	PASS	Text file created with expected content
+TEST-202	PASS	File read back correctly
+TEST-203	PASS	Append operation succeeded (6 lines)
+TEST-204	PASS	Replacement applied in file content
+TEST-205	PASS	Directory structure created
+TEST-206	PASS	Directory listing shown
+TEST-207	PASS	Multiple files created
+TEST-208	PASS	File removed
+TEST-301	PASS	JS files found (main.js, test.js)
+TEST-302	PASS	rg content search matches
+TEST-303	PASS	Recursive markdown search ok
+TEST-401	PASS	Simple shell command
+TEST-402	PASS	Output capture command
+TEST-403	PASS	Command chain
+TEST-404	PASS	termux-tools present via pkg
+TEST-501	PASS	JSON file created and platform parsed
+TEST-502	PASS	Script created and executed
+TEST-601	PASS	Search support present via --search
+TEST-602	PASS	curl available and returned HTTP headers
+TEST-701	PASS	Not a git repo (expected)
+TEST-702	SKIP	Skipped outside repo context
+TEST-801	PASS	Code analyzed and improvement suggestion generated
+TEST-802	PASS	numbers.py created and run
+TEST-803	PASS	project README updated
+TEST-901	PASS	Non-existent file error handled
+TEST-902	PASS	Invalid command error handled
+TEST-903	PASS	Permission boundary handled
+TEST-1001	PASS	Prefix/home paths verified
+TEST-1002	PASS	Shell binary path verified
+TEST-1003	PASS	Termux API commands detected
+TEST-1004	PASS	pkg command works
+TEST-1005	PASS	Storage paths checked
+TEST-1006	PASS	ENV vars checked
+TEST-1007	PASS	Android checks executed
+TEST-1008	PASS	LD_LIBRARY_PATH preserved
+TEST-1009	PASS	termux-open-url available
+TEST-1010	PASS	Permissions check within own home passed
+TEST-1011	PASS	No disallowed audio deps found in feature trees
+TEST-1012	PASS	readelf showed no libc++_static/OpenSLES/oboe
+TEST-1201	PASS	codex works and executable
+TEST-1202	PASS	codex-exec works and executable
+TEST-1203	PASS	JSON flags available
+TEST-1204	PASS	All package bin files present
+TEST-1205	PASS	Version match between codex and codex-exec
+TEST-1206	PASS	package.json bin entries include both commands
+TEST-1207	PASS	Global command availability OK
+TEST-1208	FAIL	No local codex-rs target/release binaries
+TEST-1101	PASS	Workspace removed

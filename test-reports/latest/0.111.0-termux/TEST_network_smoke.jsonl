@@ -1,0 +1,7 @@
+{"type":"thread.started","thread_id":"019ccb0b-ada8-7bf0-8388-1164f8c284ec"}
+{"type":"turn.started"}
+{"type":"item.completed","item":{"id":"item_0","type":"agent_message","text":"I’m running the single requested network check and will return only the first HTTP status line from `curl -I https://www.google.com`."}}
+{"type":"item.started","item":{"id":"item_1","type":"command_execution","command":"/bin/sh -lc \"curl -I -s https://www.google.com | sed -n '1p'\"","aggregated_output":"","exit_code":null,"status":"in_progress"}}
+{"type":"item.completed","item":{"id":"item_1","type":"command_execution","command":"/bin/sh -lc \"curl -I -s https://www.google.com | sed -n '1p'\"","aggregated_output":"HTTP/2 200 \r\n","exit_code":0,"status":"completed"}}
+{"type":"item.completed","item":{"id":"item_2","type":"agent_message","text":"`HTTP/2 200`"}}
+{"type":"turn.completed","usage":{"input_tokens":17595,"cached_input_tokens":12160,"output_tokens":131}}

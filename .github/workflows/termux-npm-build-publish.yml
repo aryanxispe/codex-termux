@@ -1,0 +1,245 @@
+name: termux-npm-build-publish
+
+on:
+  workflow_dispatch:
+    inputs:
+      source_ref:
+        description: "Git ref or branch to build"
+        required: true
+        type: string
+        default: "main"
+      publish_npm:
+        description: "Publish npm package (@aryanxispe/codex-termux)"
+        required: true
+        type: boolean
+        default: false
+      create_release:
+        description: "Create or update GitHub release with packaged assets"
+        required: true
+        type: boolean
+        default: false
+      npm_tag:
+        description: "npm dist-tag to use when publish_npm=true"
+        required: true
+        type: string
+        default: "latest"
+      release_tag:
+        description: "Release tag override (defaults to v<package.version>)"
+        required: false
+        type: string
+        default: ""
+
+jobs:
+  meta:
+    name: Resolve release metadata
+    runs-on: ubuntu-24.04
+    outputs:
+      version: ${{ steps.meta.outputs.version }}
+      release_tag: ${{ steps.meta.outputs.release_tag }}
+      ref_sha: ${{ steps.meta.outputs.ref_sha }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.source_ref }}
+
+      - name: Resolve version and tag
+        id: meta
+        shell: bash
+        run: |
+          set -euo pipefail
+          version="$(python3 - <<'PY'
+          import json
+          with open('npm-package/package.json', 'r', encoding='utf-8') as fh:
+              print(json.load(fh)['version'])
+          PY
+          )"
+          if [[ -n "${{ github.event.inputs.release_tag }}" ]]; then
+            release_tag="${{ github.event.inputs.release_tag }}"
+          else
+            release_tag="v${version}"
+          fi
+          ref_sha="$(git rev-parse HEAD)"
+          echo "version=${version}" >> "$GITHUB_OUTPUT"
+          echo "release_tag=${release_tag}" >> "$GITHUB_OUTPUT"
+          echo "ref_sha=${ref_sha}" >> "$GITHUB_OUTPUT"
+
+  build-android-arm64:
+    name: Build Android ARM64 binaries
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    needs:
+      - meta
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.source_ref }}
+
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: 1.93.0
+          targets: aarch64-linux-android
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - uses: android-actions/setup-android@v3
+
+      - name: Install Android NDK r26d
+        shell: bash
+        run: |
+          set -euo pipefail
+          yes | sdkmanager --licenses >/dev/null || true
+          sdkmanager "ndk;26.3.11579264"
+          ndk_root="${ANDROID_SDK_ROOT}/ndk/26.3.11579264"
+          echo "ANDROID_NDK_HOME=${ndk_root}" >> "$GITHUB_ENV"
+          echo "ANDROID_NDK_ROOT=${ndk_root}" >> "$GITHUB_ENV"
+          echo "${ndk_root}/toolchains/llvm/prebuilt/linux-x86_64/bin" >> "$GITHUB_PATH"
+
+      - name: Fetch fork-owned Android rusty_v8 artifacts
+        shell: bash
+        run: |
+          set -euo pipefail
+          eval "$(python3 scripts/fetch_rusty_v8_android.py | grep '^export ' | sed 's/^export //')"
+          echo "RUSTY_V8_ARCHIVE=${RUSTY_V8_ARCHIVE}" >> "$GITHUB_ENV"
+          echo "RUSTY_V8_SRC_BINDING_PATH=${RUSTY_V8_SRC_BINDING_PATH}" >> "$GITHUB_ENV"
+
+      - name: Cargo build (aarch64-linux-android)
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo build --target aarch64-linux-android --release -p codex-cli -p codex-exec
+
+      - name: Stage Android binaries
+        shell: bash
+        run: |
+          set -euo pipefail
+          out="${GITHUB_WORKSPACE}/dist/android-arm64"
+          rel="${GITHUB_WORKSPACE}/dist/release-assets"
+          mkdir -p "${out}" "${rel}"
+
+          cp "codex-rs/target/aarch64-linux-android/release/codex" "${out}/codex.bin"
+          cp "codex-rs/target/aarch64-linux-android/release/codex-exec" "${out}/codex-exec.bin"
+          cp "${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/lib/aarch64-linux-android/libc++_shared.so" "${out}/libc++_shared.so"
+          chmod +x "${out}/codex.bin" "${out}/codex-exec.bin" "${out}/libc++_shared.so"
+
+          asset="codex-termux-android-arm64-v${{ needs.meta.outputs.version }}.tar.gz"
+          tar -C "${out}" -czf "${rel}/${asset}" codex.bin codex-exec.bin libc++_shared.so
+          sha256sum "${rel}/${asset}" | awk '{print $1}' > "${rel}/${asset}.sha256"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: android-arm64-binaries
+          path: dist/android-arm64/
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: android-arm64-release-assets
+          path: dist/release-assets/codex-termux-android-arm64-v${{ needs.meta.outputs.version }}.tar.gz*
+
+  package-npm:
+    name: Pack and optionally publish npm Termux package
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    needs:
+      - meta
+      - build-android-arm64
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.source_ref }}
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: android-arm64-binaries
+          path: /tmp/android-arm64
+
+      - name: Inject Android binaries into npm package
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp /tmp/android-arm64/codex.bin npm-package/bin/codex.bin
+          cp /tmp/android-arm64/codex-exec.bin npm-package/bin/codex-exec.bin
+          cp /tmp/android-arm64/libc++_shared.so npm-package/bin/libc++_shared.so
+          chmod +x npm-package/bin/codex npm-package/bin/codex-exec npm-package/bin/codex.bin npm-package/bin/codex-exec.bin npm-package/bin/libc++_shared.so
+
+      - name: Verify patch inventory
+        shell: bash
+        run: bash verify-patches.sh
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+
+      - name: npm pack
+        id: npm_pack
+        working-directory: npm-package
+        shell: bash
+        run: |
+          set -euo pipefail
+          tarball="$(npm pack)"
+          echo "tarball=${tarball}" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: npm-termux-tarball
+          path: npm-package/${{ steps.npm_pack.outputs.tarball }}
+
+      - name: npm publish
+        if: ${{ github.event.inputs.publish_npm == 'true' }}
+        working-directory: npm-package
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm publish "${{ steps.npm_pack.outputs.tarball }}" --tag "${{ github.event.inputs.npm_tag }}" --access public
+
+  release-assets:
+    name: Create or update GitHub release
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    if: ${{ github.event.inputs.create_release == 'true' }}
+    needs:
+      - meta
+      - build-android-arm64
+      - package-npm
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.source_ref }}
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: android-arm64-release-assets
+          path: dist/release-assets/android
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: npm-termux-tarball
+          path: dist/npm
+
+      - name: Create or update release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          tag="${{ needs.meta.outputs.release_tag }}"
+          target="${{ needs.meta.outputs.ref_sha }}"
+          assets=(
+            dist/release-assets/android/*
+            dist/npm/*.tgz
+          )
+
+          if gh release view "${tag}" >/dev/null 2>&1; then
+            gh release upload "${tag}" "${assets[@]}" --clobber
+          else
+            gh release create "${tag}" "${assets[@]}" \
+              --target "${target}" \
+              --title "${tag}" \
+              --notes "Termux release built from ref '${{ github.event.inputs.source_ref }}'."
+          fi
