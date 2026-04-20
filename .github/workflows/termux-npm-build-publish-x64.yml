@@ -83,18 +83,17 @@ jobs:
         with:
           node-version: 24
 
-      - uses: android-actions/setup-android@v3
-
-      - name: Install Android NDK r26d
+      - name: Install build dependencies
         shell: bash
         run: |
-          set -euo pipefail
-          yes | sdkmanager --licenses >/dev/null || true
-          sdkmanager "ndk;26.3.11579264"
-          ndk_root="${ANDROID_SDK_ROOT}/ndk/26.3.11579264"
-          echo "ANDROID_NDK_HOME=${ndk_root}" >> "$GITHUB_ENV"
-          echo "ANDROID_NDK_ROOT=${ndk_root}" >> "$GITHUB_ENV"
-          echo "${ndk_root}/toolchains/llvm/prebuilt/linux-x86_64/bin" >> "$GITHUB_PATH"
+          sudo apt-get update
+          sudo apt-get install -y cmake ninja-build clang
+
+      - name: Setup Android NDK
+        uses: nttld/setup-ndk@v1
+        with:
+          ndk-version: r26d
+          add-to-path: true
 
       - name: Configure Cargo for x86_64-linux-android cross-compile
         shell: bash
@@ -112,11 +111,13 @@ jobs:
       - name: Build for x86_64 Android
         env:
           RUSTY_V8_FROM_SOURCE: 1
+          OPENSSL_STATIC: 1
+          CARGO_NET_GIT_FETCH_WITH_CLI: true
         shell: bash
         run: |
           set -euo pipefail
           cd codex-rs
-          cargo build --target x86_64-linux-android --release -p codex-cli -p codex-exec
+          cargo build --target x86_64-linux-android --release -p codex-cli -p codex-exec --verbose
 
       - name: Stage Android x86_64 binaries
         shell: bash
