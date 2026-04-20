@@ -94,6 +94,13 @@ jobs:
         with:
           ndk-version: r26d
           add-to-path: true
+          link-to-sdk: true
+
+      - name: Set Android NDK environment
+        shell: bash
+        run: |
+          echo "ANDROID_NDK_HOME=$ANDROID_HOME/ndk/26.3.13750724" >> $GITHUB_ENV
+          echo "PATH=$ANDROID_HOME/ndk/26.3.13750724/toolchains/llvm/prebuilt/linux-x86_64/bin:$PATH" >> $GITHUB_ENV
 
       - name: Configure Cargo for x86_64-linux-android cross-compile
         shell: bash
@@ -110,14 +117,15 @@ jobs:
 
       - name: Build for x86_64 Android
         env:
+          CC: x86_64-linux-android21-clang
+          AR: x86_64-linux-android-ar
           RUSTY_V8_FROM_SOURCE: 1
           OPENSSL_STATIC: 1
           CARGO_NET_GIT_FETCH_WITH_CLI: true
         shell: bash
         run: |
-          set -euo pipefail
           cd codex-rs
-          cargo build --target x86_64-linux-android --release -p codex-cli -p codex-exec --verbose
+          cargo build --target x86_64-linux-android --release
 
       - name: Stage Android x86_64 binaries
         shell: bash
