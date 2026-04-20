@@ -109,19 +109,13 @@ jobs:
           ar = "${ndk_bin}/llvm-ar"
           EOF
 
-      - name: Fetch fork-owned Android rusty_v8 artifacts
+      - name: Build for x86_64 Android
+        env:
+          RUSTY_V8_FROM_SOURCE: 1
         shell: bash
         run: |
           set -euo pipefail
-          eval "$(python3 scripts/fetch_rusty_v8_android.py --target x86_64-linux-android | grep '^export ' | sed 's/^export //')"
-          echo "RUSTY_V8_ARCHIVE=${RUSTY_V8_ARCHIVE}" >> "$GITHUB_ENV"
-          echo "RUSTY_V8_SRC_BINDING_PATH=${RUSTY_V8_SRC_BINDING_PATH}" >> "$GITHUB_ENV"
-
-      - name: Cargo build (x86_64-linux-android)
-        working-directory: codex-rs
-        shell: bash
-        run: |
-          set -euo pipefail
+          cd codex-rs
           cargo build --target x86_64-linux-android --release -p codex-cli -p codex-exec
 
       - name: Stage Android x86_64 binaries
