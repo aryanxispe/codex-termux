@@ -96,11 +96,13 @@ jobs:
           add-to-path: true
           link-to-sdk: true
 
-      - name: Set Android NDK environment
+      - name: Find NDK compiler
         shell: bash
         run: |
-          echo "ANDROID_NDK_HOME=$ANDROID_HOME/ndk/26.3.13750724" >> $GITHUB_ENV
+          echo "NDK_PATH=$ANDROID_HOME/ndk/26.3.13750724" >> $GITHUB_ENV
           echo "PATH=$ANDROID_HOME/ndk/26.3.13750724/toolchains/llvm/prebuilt/linux-x86_64/bin:$PATH" >> $GITHUB_ENV
+          # Test if compiler exists
+          ls -la $ANDROID_HOME/ndk/26.3.13750724/toolchains/llvm/prebuilt/linux-x86_64/bin/ | grep clang
 
       - name: Configure Cargo for x86_64-linux-android cross-compile
         shell: bash
@@ -117,8 +119,8 @@ jobs:
 
       - name: Build for x86_64 Android
         env:
-          CC: x86_64-linux-android21-clang
-          AR: x86_64-linux-android-ar
+          CC: ${{ env.NDK_PATH }}/toolchains/llvm/prebuilt/linux-x86_64/bin/clang
+          AR: ${{ env.NDK_PATH }}/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-ar
           RUSTY_V8_FROM_SOURCE: 1
           OPENSSL_STATIC: 1
           CARGO_NET_GIT_FETCH_WITH_CLI: true
