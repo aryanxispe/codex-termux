@@ -23,6 +23,9 @@
 ### Termux (Android ARM64)
 
 ```bash
+# If you see "dpkg was interrupted" error, run this first:
+# dpkg --configure -a
+
 pkg update && pkg upgrade -y
 pkg install nodejs-lts -y
 
@@ -42,6 +45,43 @@ Requirements:
 - Android 7+ / API 24+
 - ARM64 device
 - Node.js >= 18
+
+## Troubleshooting
+
+### `E: dpkg was interrupted`
+
+If you see this error during `pkg update` or `pkg upgrade`, run:
+
+```bash
+dpkg --configure -a
+```
+
+Then re-run the install steps.
+
+### `codex: command not found`
+
+After installation, if `codex` is not found, restart Termux or run:
+
+```bash
+source ~/.bashrc
+```
+
+If it still doesn't work, check npm's global bin is on your PATH:
+
+```bash
+npm config get prefix
+export PATH="$(npm config get prefix)/bin:$PATH"
+```
+
+### Storage permission denied
+
+Make sure you ran `termux-setup-storage` and tapped **Allow** when the Android permission dialog appeared. If you missed it, run it again:
+
+```bash
+termux-setup-storage
+```
+
+---
 
 ## Release Lines
 
