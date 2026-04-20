@@ -20,7 +20,7 @@
 
 ## Installation
 
-### Termux (Android ARM64)
+### 📱 Real Android phones (ARM64)
 
 ```bash
 # If you see "dpkg was interrupted" error, run this first:
@@ -40,10 +40,31 @@ codex --version
 codex login
 ```
 
+### 🖥️ Bluestacks / Android Emulator (x86_64)
+
+```bash
+pkg update && pkg upgrade -y
+pkg install nodejs-lts -y
+
+# Grant storage permission
+termux-setup-storage
+
+# Install (x64 package)
+npm install -g @aryanxispe/codex-termux-x64@latest
+
+# Verify
+codex --version
+codex login
+```
+
+| Package | Architecture | Devices |
+|---------|-------------|----------|
+| `@aryanxispe/codex-termux` | ARM64 | Real phones (Pixel, Samsung, OnePlus…) |
+| `@aryanxispe/codex-termux-x64` | x86_64 | Bluestacks, Android Studio emulator |
+
 Requirements:
 
 - Android 7+ / API 24+
-- ARM64 device
 - Node.js >= 18
 
 ## Troubleshooting
