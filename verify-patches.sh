@@ -39,10 +39,10 @@ else
 fi
 
 printf "Patch #10 (Launcher Hardening): "
-if grep -q 'exec "\$SCRIPT_DIR/codex.bin"' npm-package/bin/codex \
-  && grep -q 'exec "\$SCRIPT_DIR/codex-exec.bin"' npm-package/bin/codex-exec \
+if grep -q 'exec "$SCRIPT_DIR/$ARCH_DIR/codex.bin"' npm-package/bin/codex \
+  && grep -q 'exec "$SCRIPT_DIR/$ARCH_DIR/codex-exec.bin"' npm-package/bin/codex-exec \
   && grep -q 'CODEX_SELF_EXE' npm-package/bin/codex.js \
-  && grep -q '"bin/codex.bin"' npm-package/package.json; then
+  && grep -q '"bin/arm64"' npm-package/package.json; then
   pass
 else
   fail
@@ -50,9 +50,9 @@ fi
 
 printf "Patch #10b (Android ELF Runpath): "
 if grep -q 'link-arg=-Wl,-rpath,$ORIGIN' codex-rs/.cargo/config.toml; then
-  if [ -x npm-package/bin/codex.bin ] && [ -x npm-package/bin/codex-exec.bin ] && [ -n "$READELF_BIN" ]; then
-    if "$READELF_BIN" -d npm-package/bin/codex.bin | grep -Eq '(RUNPATH|RPATH).*\$ORIGIN' \
-      && "$READELF_BIN" -d npm-package/bin/codex-exec.bin | grep -Eq '(RUNPATH|RPATH).*\$ORIGIN'; then
+  if [ -x npm-package/bin/arm64/codex.bin ] && [ -x npm-package/bin/arm64/codex-exec.bin ] && [ -n "$READELF_BIN" ]; then
+    if "$READELF_BIN" -d npm-package/bin/arm64/codex.bin | grep -Eq '(RUNPATH|RPATH).*\$ORIGIN' \
+      && "$READELF_BIN" -d npm-package/bin/arm64/codex-exec.bin | grep -Eq '(RUNPATH|RPATH).*\$ORIGIN'; then
       pass
     else
       fail
