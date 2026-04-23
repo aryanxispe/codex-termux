@@ -83,7 +83,7 @@ jobs:
         with:
           node-version: 24
 
-      - uses: android-actions/setup-android@v3
+      - uses: android-actions/setup-android@v4
 
       - name: Install Android NDK r26d
         shell: bash
@@ -158,7 +158,7 @@ jobs:
         with:
           node-version: 24
 
-      - uses: android-actions/setup-android@v3
+      - uses: android-actions/setup-android@v4
 
       - name: Install Android NDK r26d
         shell: bash
