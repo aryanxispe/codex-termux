@@ -20,8 +20,6 @@
 
 ## Installation
 
-### 📱 Real Android phones (ARM64)
-
 ```bash
 # If you see "dpkg was interrupted" error, run this first:
 # dpkg --configure -a
@@ -32,25 +30,8 @@ pkg install nodejs-lts -y
 # Grant storage permission
 termux-setup-storage
 
-# Install
+# Install (Works on both Phone and BlueStacks)
 npm install -g @aryanxispe/codex-termux@latest
-
-# Verify
-codex --version
-codex login
-```
-
-### 🖥️ Bluestacks / Android Emulator (x86_64)
-
-```bash
-pkg update && pkg upgrade -y
-pkg install nodejs-lts -y
-
-# Grant storage permission
-termux-setup-storage
-
-# Install (x64 package)
-npm install -g @aryanxispe/codex-termux-x64@latest
 
 # Verify
 codex --version
@@ -59,8 +40,7 @@ codex login
 
 | Package | Architecture | Devices |
 |---------|-------------|----------|
-| `@aryanxispe/codex-termux` | ARM64 | Real phones (Pixel, Samsung, OnePlus…) |
-| `@aryanxispe/codex-termux-x64` | x86_64 | Bluestacks, Android Studio emulator |
+| `@aryanxispe/codex-termux` | **Universal** (ARM64 / x86_64) | Phones & BlueStacks / Emulators |
 
 Requirements:
 

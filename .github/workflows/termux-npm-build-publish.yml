@@ -138,6 +138,73 @@ jobs:
           name: android-arm64-release-assets
           path: dist/release-assets/codex-termux-android-arm64-v${{ needs.meta.outputs.version }}.tar.gz*
 
+  build-android-x64:
+    name: Build Android x86_64 binaries
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    needs:
+      - meta
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.source_ref }}
+
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: 1.93.0
+          targets: x86_64-linux-android
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - uses: android-actions/setup-android@v3
+
+      - name: Install Android NDK r26d
+        shell: bash
+        run: |
+          set -euo pipefail
+          yes | sdkmanager --licenses >/dev/null || true
+          sdkmanager "ndk;26.3.11579264"
+          ndk_root="${ANDROID_SDK_ROOT}/ndk/26.3.11579264"
+          echo "ANDROID_NDK_HOME=${ndk_root}" >> "$GITHUB_ENV"
+          echo "ANDROID_NDK_ROOT=${ndk_root}" >> "$GITHUB_ENV"
+          echo "${ndk_root}/toolchains/llvm/prebuilt/linux-x86_64/bin" >> "$GITHUB_PATH"
+
+      - name: Cargo build (x86_64-linux-android)
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo build --target x86_64-linux-android --release -p codex-cli -p codex-exec
+
+      - name: Stage Android binaries
+        shell: bash
+        run: |
+          set -euo pipefail
+          out="${GITHUB_WORKSPACE}/dist/android-x64"
+          rel="${GITHUB_WORKSPACE}/dist/release-assets"
+          mkdir -p "${out}" "${rel}"
+
+          cp "codex-rs/target/x86_64-linux-android/release/codex" "${out}/codex.bin"
+          cp "codex-rs/target/x86_64-linux-android/release/codex-exec" "${out}/codex-exec.bin"
+          cp "${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/lib/x86_64-linux-android/libc++_shared.so" "${out}/libc++_shared.so"
+          chmod +x "${out}/codex.bin" "${out}/codex-exec.bin" "${out}/libc++_shared.so"
+
+          asset="codex-termux-android-x64-v${{ needs.meta.outputs.version }}.tar.gz"
+          tar -C "${out}" -czf "${rel}/${asset}" codex.bin codex-exec.bin libc++_shared.so
+          sha256sum "${rel}/${asset}" | awk '{print $1}' > "${rel}/${asset}.sha256"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: android-x64-binaries
+          path: dist/android-x64/
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: android-x64-release-assets
+          path: dist/release-assets/codex-termux-android-x64-v${{ needs.meta.outputs.version }}.tar.gz*
+
   package-npm:
     name: Pack and optionally publish npm Termux package
     runs-on: ubuntu-24.04
@@ -145,6 +212,7 @@ jobs:
     needs:
       - meta
       - build-android-arm64
+      - build-android-x64
     permissions:
       contents: read
     steps:
@@ -157,14 +225,28 @@ jobs:
           name: android-arm64-binaries
           path: /tmp/android-arm64
 
+      - uses: actions/download-artifact@v4
+        with:
+          name: android-x64-binaries
+          path: /tmp/android-x64
+
       - name: Inject Android binaries into npm package
         shell: bash
         run: |
           set -euo pipefail
-          cp /tmp/android-arm64/codex.bin npm-package/bin/codex.bin
-          cp /tmp/android-arm64/codex-exec.bin npm-package/bin/codex-exec.bin
-          cp /tmp/android-arm64/libc++_shared.so npm-package/bin/libc++_shared.so
-          chmod +x npm-package/bin/codex npm-package/bin/codex-exec npm-package/bin/codex.bin npm-package/bin/codex-exec.bin npm-package/bin/libc++_shared.so
+          mkdir -p npm-package/bin/arm64 npm-package/bin/x64
+
+          cp /tmp/android-arm64/codex.bin npm-package/bin/arm64/codex.bin
+          cp /tmp/android-arm64/codex-exec.bin npm-package/bin/arm64/codex-exec.bin
+          cp /tmp/android-arm64/libc++_shared.so npm-package/bin/arm64/libc++_shared.so
+
+          cp /tmp/android-x64/codex.bin npm-package/bin/x64/codex.bin
+          cp /tmp/android-x64/codex-exec.bin npm-package/bin/x64/codex-exec.bin
+          cp /tmp/android-x64/libc++_shared.so npm-package/bin/x64/libc++_shared.so
+
+          chmod +x npm-package/bin/codex npm-package/bin/codex-exec \
+                   npm-package/bin/arm64/codex.bin npm-package/bin/arm64/codex-exec.bin npm-package/bin/arm64/libc++_shared.so \
+                   npm-package/bin/x64/codex.bin npm-package/bin/x64/codex-exec.bin npm-package/bin/x64/libc++_shared.so
 
       - name: Verify patch inventory
         shell: bash
@@ -204,6 +286,7 @@ jobs:
     needs:
       - meta
       - build-android-arm64
+      - build-android-x64
       - package-npm
     permissions:
       contents: write
@@ -215,6 +298,11 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: android-arm64-release-assets
+          path: dist/release-assets/android
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: android-x64-release-assets
           path: dist/release-assets/android
 
       - uses: actions/download-artifact@v4

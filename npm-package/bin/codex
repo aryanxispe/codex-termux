@@ -31,8 +31,15 @@ sanitize_ld_library_path() {
   fi
 }
 
+ARCH=$(uname -m)
+case "$ARCH" in
+  aarch64) ARCH_DIR="arm64" ;;
+  x86_64)  ARCH_DIR="x64"   ;;
+  *) echo "Unsupported architecture: $ARCH"; exit 1 ;;
+esac
+
 export CODEX_MANAGED_BY_NPM=1
 export CODEX_SELF_EXE="$SCRIPT_DIR/codex"
-export LD_LIBRARY_PATH="$(sanitize_ld_library_path)"
+export LD_LIBRARY_PATH="$(sanitize_ld_library_path):$SCRIPT_DIR/$ARCH_DIR"
 
-exec "$SCRIPT_DIR/codex.bin" "$@"
+exec "$SCRIPT_DIR/$ARCH_DIR/codex.bin" "$@"

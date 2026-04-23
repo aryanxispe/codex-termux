@@ -13,9 +13,8 @@
     "bin/codex-exec.js",
     "bin/codex",
     "bin/codex-exec",
-    "bin/codex.bin",
-    "bin/codex-exec.bin",
-    "bin/libc++_shared.so",
+    "bin/arm64",
+    "bin/x64",
     "README.md"
   ],
   "keywords": [
@@ -24,6 +23,8 @@
     "termux",
     "android",
     "arm64",
+    "x86_64",
+    "bluestacks",
     "cli",
     "ai",
     "coding-agent"
@@ -46,6 +47,7 @@
     "linux"
   ],
   "cpu": [
-    "arm64"
+    "arm64",
+    "x64"
   ]
 }
