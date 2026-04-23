@@ -57,6 +57,10 @@ yarn-error.log*
 *.tgz
 npm-package/bin/*.bin
 npm-package/bin/libc++_shared.so
+npm-package/bin/arm64/
+npm-package/bin/x64/
+android-arm64-binaries.zip
+android-x64-binaries.zip
 
 # ci
 .vercel/
