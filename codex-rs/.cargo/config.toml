@@ -12,21 +12,21 @@ rustflags = ["-C", "link-arg=-Wl,--stack,8388608"]
 
 [target.aarch64-linux-android]
 ar = "llvm-ar"
-linker = "aarch64-linux-android29-clang"
+linker = "aarch64-linux-android24-clang"
 rustflags = ["-C", "link-arg=-lc++_shared", "-C", "link-arg=-Wl,-rpath,$ORIGIN"]
 
 [target.x86_64-linux-android]
 ar = "llvm-ar"
-linker = "x86_64-linux-android29-clang"
+linker = "x86_64-linux-android24-clang"
 rustflags = ["-C", "link-arg=-lc++_shared", "-C", "link-arg=-Wl,-rpath,$ORIGIN"]
 
 [env]
 AR_aarch64_linux_android = "llvm-ar"
-CC_aarch64_linux_android = "aarch64-linux-android29-clang"
-CXX_aarch64_linux_android = "aarch64-linux-android29-clang++"
+CC_aarch64_linux_android = "aarch64-linux-android24-clang"
+CXX_aarch64_linux_android = "aarch64-linux-android24-clang++"
 RANLIB_aarch64_linux_android = "llvm-ranlib"
 
 AR_x86_64_linux_android = "llvm-ar"
-CC_x86_64_linux_android = "x86_64-linux-android29-clang"
-CXX_x86_64_linux_android = "x86_64-linux-android29-clang++"
+CC_x86_64_linux_android = "x86_64-linux-android24-clang"
+CXX_x86_64_linux_android = "x86_64-linux-android24-clang++"
 RANLIB_x86_64_linux_android = "llvm-ranlib"

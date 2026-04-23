@@ -1,6 +1,6 @@
 {
   "name": "@aryanxispe/codex-termux",
-  "version": "0.121.2-termux",
+  "version": "0.121.3-termux",
   "description": "OpenAI Codex CLI for Android Termux (ARM64) — maintained by Aryan Gupta (Aryanispe Host). Built from upstream OpenAI Codex rust-v0.121.0. Excludes voice/realtime audio, uses Android API 29 with RUNPATH=$ORIGIN hardening for native Termux invocation.",
   "type": "module",
   "main": "bin/codex.js",

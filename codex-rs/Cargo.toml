@@ -417,11 +417,11 @@ ignored = [
 ]
 
 [profile.release]
-lto = true
+lto = "thin"
 # Because we bundle some of these executables with the TypeScript CLI, we
 # remove everything to make the binary as small as possible.
 strip = true
-opt-level = "z"
+opt-level = "s"
 panic = "abort"
 
 # See https://github.com/openai/codex/issues/1411 for details.
