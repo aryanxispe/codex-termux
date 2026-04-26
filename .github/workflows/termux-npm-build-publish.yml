@@ -128,12 +128,12 @@ jobs:
           tar -C "${out}" -czf "${rel}/${asset}" codex.bin codex-exec.bin libc++_shared.so
           sha256sum "${rel}/${asset}" | awk '{print $1}' > "${rel}/${asset}.sha256"
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: android-arm64-binaries
           path: dist/android-arm64/
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: android-arm64-release-assets
           path: dist/release-assets/codex-termux-android-arm64-v${{ needs.meta.outputs.version }}.tar.gz*
@@ -195,12 +195,12 @@ jobs:
           tar -C "${out}" -czf "${rel}/${asset}" codex.bin codex-exec.bin libc++_shared.so
           sha256sum "${rel}/${asset}" | awk '{print $1}' > "${rel}/${asset}.sha256"
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: android-x64-binaries
           path: dist/android-x64/
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: android-x64-release-assets
           path: dist/release-assets/codex-termux-android-x64-v${{ needs.meta.outputs.version }}.tar.gz*
@@ -266,7 +266,7 @@ jobs:
           tarball="$(npm pack)"
           echo "tarball=${tarball}" >> "$GITHUB_OUTPUT"
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: npm-termux-tarball
           path: npm-package/${{ steps.npm_pack.outputs.tarball }}
