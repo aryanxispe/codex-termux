@@ -220,12 +220,12 @@ jobs:
         with:
           ref: ${{ github.event.inputs.source_ref }}
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: android-arm64-binaries
           path: /tmp/android-arm64
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: android-x64-binaries
           path: /tmp/android-x64
@@ -295,17 +295,17 @@ jobs:
         with:
           ref: ${{ github.event.inputs.source_ref }}
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: android-arm64-release-assets
           path: dist/release-assets/android
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: android-x64-release-assets
           path: dist/release-assets/android
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: npm-termux-tarball
           path: dist/npm
