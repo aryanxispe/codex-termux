@@ -38,7 +38,7 @@ jobs:
       release_tag: ${{ steps.meta.outputs.release_tag }}
       ref_sha: ${{ steps.meta.outputs.ref_sha }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           ref: ${{ github.event.inputs.source_ref }}
 
@@ -70,7 +70,7 @@ jobs:
     needs:
       - meta
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           ref: ${{ github.event.inputs.source_ref }}
 
@@ -145,7 +145,7 @@ jobs:
     needs:
       - meta
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           ref: ${{ github.event.inputs.source_ref }}
 
@@ -216,7 +216,7 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           ref: ${{ github.event.inputs.source_ref }}
 
@@ -291,7 +291,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           ref: ${{ github.event.inputs.source_ref }}
 
